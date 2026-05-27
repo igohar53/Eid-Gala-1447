@@ -45,9 +45,10 @@ app.get('/api/config', (req, res) => {
     label: q.label,
     type: q.type,
     options: q.options || null,
+    boxes: q.boxes || null,
     hint: q.hint || null,
     placeholder: q.placeholder || null,
-    timer: config.QUESTION_TIMER
+    timer: q.timer || config.QUESTION_TIMER
   }));
   res.json({
     questions: safeQuestions,

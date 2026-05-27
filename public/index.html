@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Eid Trivia Night 2025 🌙</title>
+<title>Eid Gala Quiz 2025 🌙</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--green:#1D9E75;--green-dark:#0F6E56;--green-light:#E1F5EE;--green-mid:#9FE1CB;--bg:#f0f7f4;--card:#fff;--text:#1a202c;--sub:#64748b;--border:#e2e8f0;--danger:#e53e3e;--warn:#d97706}
@@ -103,7 +103,7 @@ textarea{resize:none;line-height:1.6}
 <!-- SCREEN 1: REGISTRATION -->
 <div id="screen-register" class="screen active">
   <div class="header">
-    <h1>🌙 Eid Trivia Night 2025</h1>
+    <h1>🌙 Eid Gala Quiz 2025</h1>
     <p>Register your table to join the game</p>
   </div>
   <div class="card">
@@ -124,7 +124,7 @@ textarea{resize:none;line-height:1.6}
 <!-- SCREEN 2: WAITING ROOM -->
 <div id="screen-waiting" class="screen">
   <div class="header">
-    <h1>🌙 Eid Trivia Night 2025</h1>
+    <h1>🌙 Eid Gala Quiz 2025</h1>
     <p>You're registered and ready</p>
   </div>
   <div class="card" style="text-align:center">
@@ -144,7 +144,7 @@ textarea{resize:none;line-height:1.6}
 <!-- SCREEN 3: QUESTION DASHBOARD -->
 <div id="screen-dashboard" class="screen">
   <div class="header">
-    <h1>🌙 Eid Trivia Night</h1>
+    <h1>🌙 Eid Gala Quiz</h1>
     <p id="dashTeamLabel">Tap a question when the host unlocks it</p>
   </div>
   <div class="legend">
@@ -180,7 +180,7 @@ textarea{resize:none;line-height:1.6}
 <!-- SCREEN 5: RESULT (submitted / timeout) -->
 <div id="screen-result" class="screen">
   <div class="header">
-    <h1>🌙 Eid Trivia Night</h1>
+    <h1>🌙 Eid Gala Quiz</h1>
     <p id="resultTeamLabel"></p>
   </div>
   <div class="card result-card">
@@ -195,7 +195,7 @@ textarea{resize:none;line-height:1.6}
 <!-- SCREEN 6: GAME OVER / LEADERBOARD -->
 <div id="screen-gameover" class="screen">
   <div class="header">
-    <h1>🌙 Game Over!</h1>
+    <h1>🌙 Eid Gala Quiz</h1>
     <p>Final results</p>
   </div>
   <div class="card">
@@ -214,6 +214,7 @@ let state = {
   members: [],
   questions: [],
   timer: 60,
+  globalTimer: 60,
   currentQ: null,
   timerInterval: null,
   timerLeft: 60,
@@ -279,6 +280,7 @@ async function register() {
     const cfg = await fetch('/api/config').then(r => r.json());
     state.questions = cfg.questions;
     state.timer = cfg.timer;
+    state.globalTimer = cfg.timer;
 
     document.getElementById('waitingTeamName').textContent = captain;
     document.getElementById('waitingMembers').innerHTML =
@@ -365,6 +367,9 @@ function openQuestion(qId) {
   clearTimerInterval();
 
   const q = state.currentQ;
+  // Use per-question timer if set, otherwise fall back to global timer
+  state.timer = q.timer || state.globalTimer;
+
   document.getElementById('answerBadge').textContent = `Q${q.id} · ${q.category}`;
   document.getElementById('backBtn').style.display = 'flex';
   document.getElementById('answerError').classList.remove('show');
@@ -381,6 +386,13 @@ function openQuestion(qId) {
   } else if (q.type === 'checkbox') {
     field.innerHTML = q.options.map(opt =>
       `<label class="cb-option" onclick="toggleCB(this)"><input type="checkbox" value="${opt}"> ${opt}</label>`
+    ).join('');
+  } else if (q.type === 'multibox') {
+    field.innerHTML = q.boxes.map((label, i) =>
+      `<div style="margin-bottom:10px">
+        <div style="font-size:11px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:5px">${label}</div>
+        <input type="text" id="aq${q.id}_${i}" placeholder="Enter answer" style="font-size:15px">
+      </div>`
     ).join('');
   } else if (q.type === 'paragraph') {
     field.innerHTML = `<textarea id="aq${q.id}" rows="8" placeholder="${q.placeholder || ''}" style="font-size:14px"></textarea>`;
@@ -418,6 +430,18 @@ function getAnswer() {
   if (q.type === 'checkbox') {
     const checked = Array.from(document.querySelectorAll(`.cb-option.selected input`)).map(c => c.value);
     return checked.length >= 1 ? checked : null;
+  }
+  if (q.type === 'multibox') {
+    const values = q.boxes.map((label, i) => {
+      const el = document.getElementById(`aq${q.id}_${i}`);
+      return el ? `${label}: ${el.value.trim()}` : `${label}: `;
+    });
+    // Require at least one box filled
+    const anyFilled = q.boxes.some((label, i) => {
+      const el = document.getElementById(`aq${q.id}_${i}`);
+      return el && el.value.trim() !== '';
+    });
+    return anyFilled ? values.join(' | ') : null;
   }
   const el = document.getElementById(`aq${q.id}`);
   return el && el.value.trim() ? el.value.trim() : null;
@@ -557,6 +581,7 @@ window.addEventListener('load', async () => {
       const cfg = await fetch('/api/config').then(r => r.json());
       state.questions = cfg.questions;
       state.timer = cfg.timer;
+      state.globalTimer = cfg.timer;
       state.team = savedTeam;
       state.captain = savedCaptain;
       document.getElementById('waitingTeamName').textContent = savedCaptain;

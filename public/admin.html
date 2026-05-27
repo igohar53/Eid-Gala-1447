@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Eid Trivia 2025</title>
+<title>Admin — Eid Gala Quiz 2025</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--green:#1D9E75;--green-dark:#0F6E56;--green-light:#E1F5EE;--bg:#f0f7f4;--card:#fff;--text:#1a202c;--sub:#64748b;--border:#e2e8f0;--danger:#e53e3e;--warn:#d97706}
@@ -97,7 +97,7 @@ input:focus,select:focus{border-color:var(--green)}
 <div id="screen-login" class="screen active">
   <div class="login-wrap">
     <h2>🔐 Admin Panel</h2>
-    <p>Eid Trivia Night 2025</p>
+    <p>Eid Gala Quiz 2025</p>
     <input type="password" id="passwordInput" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')login()">
     <button class="btn btn-green" onclick="login()">Login →</button>
     <div style="color:var(--danger);font-size:13px;margin-top:8px;display:none" id="loginError">Wrong password</div>
@@ -109,7 +109,7 @@ input:focus,select:focus{border-color:var(--green)}
   <div class="header">
     <div>
       <h1>🎮 Admin Panel</h1>
-      <p>Eid Trivia Night 2025</p>
+      <p>Eid Gala Quiz 2025</p>
     </div>
     <div class="header-right">
       <div style="color:#9FE1CB;font-size:13px" id="adminStatus">Loading...</div>
@@ -128,8 +128,14 @@ input:focus,select:focus{border-color:var(--green)}
     <button class="btn btn-green" id="startBtn" onclick="startGame()">▶ Start Game</button>
     <button class="btn btn-outline" onclick="endGame()">🏁 End Game</button>
     <div class="timer-row" style="margin-left:auto">
-      <span style="font-size:13px;color:var(--sub)">Timer:</span>
-      <input type="number" id="timerInput" value="60" min="10" max="300">
+      <span style="font-size:13px;color:var(--sub)">Default timer:</span>
+      <select id="timerInput">
+        <option value="30">30s</option>
+        <option value="60" selected>60s</option>
+        <option value="90">90s</option>
+        <option value="120">120s</option>
+        <option value="150">150s</option>
+      </select>
       <button class="btn btn-outline btn-sm" onclick="updateTimer()">Set</button>
     </div>
     <button class="btn btn-red btn-sm" onclick="resetGame()">🔄 Reset</button>
@@ -260,6 +266,7 @@ function renderQuestionGrid(data) {
         <span class="q-cat">${q.category}</span>
       </div>
       <div class="q-label">${q.label}</div>
+      <div style="font-size:11px;color:var(--sub);margin:4px 0">⏱ ${q.timer || data.timer}s timer</div>
       <div class="q-submitted">${submittedCount} / ${data.totalTeams} submitted</div>
       <button class="unlock-btn ${unlocked ? 'lock' : 'unlock'}" style="margin-top:10px" onclick="toggleQuestion(${q.id}, ${unlocked})">
         ${unlocked ? '🔒 Lock question' : '🔓 Unlock question'}

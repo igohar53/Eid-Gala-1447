@@ -13,14 +13,16 @@ module.exports = {
   // Google Apps Script Web App URL (for writing to sheet)
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzlcno9YaxVNv3KFwa3E4yKJungjIzYMzUtI30VVO-3464oCc2kzn9kr8mM4hvyqBegpg/exec",
 
-  // Timer in seconds per question (edit this to change timer)
+  // Default timer in seconds (used if a question has no timer set)
   QUESTION_TIMER: 60,
 
   // Max team size (captain + members)
   MAX_TEAM_SIZE: 9,
 
   // Questions config
-  // type: "short" | "number" | "mcq" | "paragraph" | "checkbox"
+  // type: "short" | "number" | "mcq" | "paragraph" | "checkbox" | "multibox"
+  // multibox: renders multiple labelled input boxes, one per entry in `boxes`
+  // timer: per-question timer in seconds (overrides QUESTION_TIMER)
   // autoMark: true = app marks it automatically
   // correct: answer for auto-marking (mcq/number/short)
   QUESTIONS: [
@@ -29,6 +31,7 @@ module.exports = {
       category: "General Knowledge",
       label: "Population of Tanzania",
       type: "number",
+      timer: 60,
       autoMark: true,
       correct: "70",
       hint: "Enter a number in millions"
@@ -37,9 +40,10 @@ module.exports = {
       id: 2,
       category: "General Knowledge",
       label: "Capital cities (8 countries)",
-      type: "paragraph",
+      type: "multibox",
+      timer: 120,
       autoMark: false,
-      placeholder: "UAE:\nSweden:\nRwanda:\nGermany:\nBrazil:\nAustralia:\nTurkey:\nSwitzerland:",
+      boxes: ["UAE", "Sweden", "Rwanda", "Germany", "Brazil", "Australia", "Turkey", "Switzerland"],
       hint: "1 point per correct capital · 8 points total"
     },
     {
@@ -47,6 +51,7 @@ module.exports = {
       category: "General Knowledge",
       label: "Bones in human body",
       type: "number",
+      timer: 60,
       autoMark: true,
       correct: "206",
       hint: "Enter a number"
@@ -56,6 +61,7 @@ module.exports = {
       category: "General Knowledge",
       label: "Tanganyika independence year",
       type: "number",
+      timer: 60,
       autoMark: true,
       correct: "1961",
       hint: "Enter a year"
@@ -65,6 +71,7 @@ module.exports = {
       category: "General Knowledge",
       label: "Most abundant gas",
       type: "mcq",
+      timer: 60,
       autoMark: true,
       correct: "C",
       options: ["A) Oxygen", "B) Carbon Dioxide", "C) Nitrogen", "D) Hydrogen"]
@@ -74,14 +81,16 @@ module.exports = {
       category: "Back to School",
       label: "Pythagorean theorem",
       type: "short",
+      timer: 60,
       autoMark: false,
-      hint: "Write as an equation e.g. a²+b²=c²"
+      hint: "Write as equation"
     },
     {
       id: 7,
       category: "Back to School",
       label: "Unit of force",
       type: "mcq",
+      timer: 60,
       autoMark: true,
       correct: "B",
       options: ["A) Watt", "B) Newton", "C) Joule", "D) Pascal"]
@@ -91,6 +100,7 @@ module.exports = {
       category: "Back to School",
       label: "Shirt original price",
       type: "number",
+      timer: 60,
       autoMark: true,
       correct: "30000",
       hint: "Enter amount in TZS, numbers only"
@@ -100,6 +110,7 @@ module.exports = {
       category: "Back to School",
       label: "Organ producing insulin",
       type: "mcq",
+      timer: 60,
       autoMark: true,
       correct: "C",
       options: ["A) Liver", "B) Kidney", "C) Pancreas", "D) Spleen"]
@@ -109,43 +120,48 @@ module.exports = {
       category: "Back to School",
       label: "Value of Pi",
       type: "short",
+      timer: 90,
       autoMark: false,
-      hint: "More digits = more points. Start with 3.14"
+      hint: null
     },
     {
       id: 11,
       category: "Deen",
       label: "Dauat in Surat",
-      type: "short",
+      type: "multibox",
+      timer: 90,
       autoMark: false,
-      hint: "Write the name"
+      boxes: ["1", "2", "3", "4", "5", "6", "7"],
+      hint: null
     },
     {
       id: 12,
       category: "Deen",
       label: "Moula na Ali's battles",
-      type: "checkbox",
-      autoMark: true,
-      correct: ["Jang-e-Siffin", "Jang-e-Jamal", "Jang-e-Nahrawan"],
-      options: ["Jang-e-Siffin", "Jang-e-Jamal", "Jang-e-Nahrawan"],
-      hint: "Select at least 2"
+      type: "multibox",
+      timer: 60,
+      autoMark: false,
+      boxes: ["Battle 1", "Battle 2"],
+      hint: null
     },
     {
       id: 13,
       category: "Deen",
       label: "Firishtao na jhagra",
-      type: "paragraph",
+      type: "multibox",
+      timer: 60,
       autoMark: false,
-      placeholder: "Likho...",
-      hint: "Write any 2 of the 3 things the angels argued about"
+      boxes: ["1", "2"],
+      hint: null
     },
     {
       id: 14,
       category: "Deen",
       label: "Arabic word translations",
-      type: "paragraph",
+      type: "multibox",
+      timer: 150,
       autoMark: false,
-      placeholder: "Nemat:\nHidayat:\nTaaat:\nRehmat:\nMagferat:\nTaqwa:\nYaqeen:\nTauba:\nKhushu:\nHikmat:",
+      boxes: ["Nemat", "Hidayat", "Taaat", "Rehmat", "Magferat", "Taqwa", "Yaqeen", "Tauba", "Khushu", "Hikmat"],
       hint: "1 point per correct translation · 10 points total"
     },
     {
@@ -153,6 +169,7 @@ module.exports = {
       category: "Deen",
       label: "Surato in 30mo siparo",
       type: "number",
+      timer: 60,
       autoMark: true,
       correct: "37",
       hint: "Enter a number"
