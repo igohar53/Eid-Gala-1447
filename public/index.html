@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Eid Trivia Night 2025 🌙</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--green:#1D9E75;--green-dark:#0F6E56;--green-light:#E1F5EE;--green-mid:#9FE1CB;--bg:#f0f7f4;--card:#fff;--text:#1a202c;--sub:#64748b;--border:#e2e8f0;--danger:#e53e3e;--warn:#d97706}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);min-height:100vh;color:var(--text)}
+.screen{display:none;min-height:100vh;padding:1rem}
+.screen.active{display:flex;flex-direction:column}
+.header{background:var(--green);padding:1.25rem 1rem;text-align:center;border-radius:16px;margin-bottom:1rem}
+.header h1{color:#fff;font-size:20px;font-weight:700}
+.header p{color:var(--green-mid);font-size:13px;margin-top:4px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.25rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
+.label{font-size:11px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px}
+input,textarea,select{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-family:inherit;color:var(--text);background:#fff;outline:none;transition:border 0.15s}
+input:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(29,158,117,0.12)}
+textarea{resize:none;line-height:1.6}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover{background:var(--green-dark)}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+.btn-outline{background:transparent;border:1.5px solid var(--green);color:var(--green)}
+.member-row{display:flex;gap:8px;margin-bottom:8px}
+.member-row input{flex:1}
+.member-row button{width:36px;height:44px;border:1.5px solid var(--border);background:#fff;border-radius:10px;cursor:pointer;font-size:18px;color:var(--sub);flex-shrink:0}
+.member-row button:hover{border-color:var(--danger);color:var(--danger)}
+
+/* WAITING */
+.waiting-icon{font-size:48px;text-align:center;margin:1rem 0}
+.waiting-text{text-align:center;color:var(--sub);font-size:15px;line-height:1.6}
+.team-pill{display:inline-block;background:var(--green-light);color:var(--green-dark);padding:4px 12px;border-radius:20px;font-size:13px;font-weight:500;margin-top:8px}
+.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+/* QUESTION TILES */
+.tiles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+.tile{aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;border:2px solid transparent;position:relative;user-select:none}
+.tile-locked{background:#f1f5f9;border-color:#e2e8f0;cursor:not-allowed}
+.tile-locked .tile-num{color:#cbd5e0}
+.tile-locked .tile-cat{color:#cbd5e0}
+.tile-unlocked{background:var(--green-light);border-color:var(--green);cursor:pointer;box-shadow:0 2px 8px rgba(29,158,117,0.2)}
+.tile-unlocked:active{transform:scale(0.96)}
+.tile-unlocked .tile-num{color:var(--green-dark)}
+.tile-unlocked .tile-cat{color:var(--green)}
+.tile-submitted{background:#e8f5e9;border-color:#4caf50;cursor:not-allowed}
+.tile-submitted .tile-num{color:#2e7d32}
+.tile-submitted .tile-cat{color:#388e3c}
+.tile-submitted::after{content:'✓';position:absolute;top:6px;right:8px;font-size:13px;color:#2e7d32;font-weight:700}
+.tile-num{font-size:22px;font-weight:700}
+.tile-cat{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;margin-top:2px;text-align:center;padding:0 4px}
+.tile-new{animation:popIn 0.4s ease}
+@keyframes popIn{0%{transform:scale(0.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.legend{display:flex;gap:12px;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--sub)}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+
+/* ANSWER SCREEN */
+.q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.q-badge{background:var(--green-light);color:var(--green-dark);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.timer-ring{position:relative;width:56px;height:56px}
+.timer-ring svg{transform:rotate(-90deg)}
+.timer-ring circle{fill:none;stroke:#e2e8f0;stroke-width:4}
+.timer-ring .progress{stroke:var(--green);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke 0.3s}
+.timer-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:16px;font-weight:700;color:var(--green)}
+.timer-warn .progress{stroke:var(--warn)}
+.timer-warn .timer-num{color:var(--warn)}
+.timer-danger .progress{stroke:var(--danger)}
+.timer-danger .timer-num{color:var(--danger)}
+.mc-option{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1.5px solid var(--border);border-radius:12px;margin-bottom:10px;cursor:pointer;font-size:15px;transition:all 0.15s}
+.mc-option:hover{border-color:var(--green);background:var(--green-light)}
+.mc-option.selected{border-color:var(--green);background:var(--green-light);color:var(--green-dark);font-weight:500}
+.mc-option input{width:18px;height:18px;accent-color:var(--green);flex-shrink:0;pointer-events:none}
+.cb-option{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1.5px solid var(--border);border-radius:12px;margin-bottom:10px;cursor:pointer;font-size:15px;transition:all 0.15s}
+.cb-option:hover{border-color:var(--green);background:var(--green-light)}
+.cb-option.selected{border-color:var(--green);background:var(--green-light);color:var(--green-dark);font-weight:500}
+.cb-option input{width:18px;height:18px;accent-color:var(--green);flex-shrink:0;pointer-events:none}
+.hint{font-size:12px;color:var(--sub);margin-top:8px;line-height:1.5;padding:8px 10px;background:#f8fafc;border-radius:8px}
+.error{color:var(--danger);font-size:13px;margin-top:6px;display:none}
+.error.show{display:block}
+.back-btn{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--sub);font-size:14px;cursor:pointer;padding:0;margin-bottom:1rem;font-family:inherit}
+
+/* TIMEOUT / SUBMITTED */
+.result-card{text-align:center;padding:2rem 1.25rem}
+.result-icon{font-size:52px;margin-bottom:1rem}
+.result-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.result-sub{font-size:14px;color:var(--sub);line-height:1.6}
+.score-badge{display:inline-block;background:var(--green-light);color:var(--green-dark);padding:6px 18px;border-radius:20px;font-size:15px;font-weight:600;margin-top:12px}
+
+/* LEADERBOARD */
+.lb-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.lb-row:last-child{border-bottom:none}
+.lb-rank{font-size:20px;width:32px;text-align:center;flex-shrink:0}
+.lb-name{flex:1;font-size:15px;font-weight:500}
+.lb-score{font-size:18px;font-weight:700;color:var(--green)}
+.lb-count{font-size:12px;color:var(--sub);margin-top:2px}
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: REGISTRATION -->
+<div id="screen-register" class="screen active">
+  <div class="header">
+    <h1>🌙 Eid Trivia Night 2025</h1>
+    <p>Register your table to join the game</p>
+  </div>
+  <div class="card">
+    <div class="label">Captain name (your table will be known by this)</div>
+    <input type="text" id="captainName" placeholder="e.g. Ahmed Al-Farsi" maxlength="30">
+  </div>
+  <div class="card">
+    <div class="label">Table members (up to 8)</div>
+    <div id="membersList">
+      <div class="member-row"><input type="text" placeholder="Member 1" maxlength="25"><button onclick="removeMember(this)" title="Remove">×</button></div>
+    </div>
+    <button class="btn btn-outline" onclick="addMember()" style="margin-top:8px;padding:10px">+ Add member</button>
+  </div>
+  <button class="btn btn-primary" onclick="register()">Join the game →</button>
+  <div class="error show" id="reg-error" style="text-align:center;margin-top:8px;display:none"></div>
+</div>
+
+<!-- SCREEN 2: WAITING ROOM -->
+<div id="screen-waiting" class="screen">
+  <div class="header">
+    <h1>🌙 Eid Trivia Night 2025</h1>
+    <p>You're registered and ready</p>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="waiting-icon pulse">⏳</div>
+    <div class="waiting-text">
+      Waiting for the host to start the game...<br><br>
+      Your table:<br>
+      <span class="team-pill" id="waitingTeamName"></span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="label">Your team</div>
+    <div id="waitingMembers" style="font-size:14px;color:var(--sub);line-height:1.8"></div>
+  </div>
+</div>
+
+<!-- SCREEN 3: QUESTION DASHBOARD -->
+<div id="screen-dashboard" class="screen">
+  <div class="header">
+    <h1>🌙 Eid Trivia Night</h1>
+    <p id="dashTeamLabel">Tap a question when the host unlocks it</p>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Unlocked</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#4caf50"></div> Submitted</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e2e8f0"></div> Locked</div>
+  </div>
+  <div class="tiles-grid" id="tilesGrid"></div>
+  <div style="text-align:center;color:var(--sub);font-size:13px;padding:0.5rem 0" id="progressLabel"></div>
+</div>
+
+<!-- SCREEN 4: ANSWER -->
+<div id="screen-answer" class="screen">
+  <button class="back-btn" onclick="goBack()" id="backBtn">← Back</button>
+  <div class="q-header">
+    <div class="q-badge" id="answerBadge">Q1 · General Knowledge</div>
+    <div class="timer-ring" id="timerRing">
+      <svg width="56" height="56" viewBox="0 0 56 56">
+        <circle cx="28" cy="28" r="24"/>
+        <circle class="progress" id="timerCircle" cx="28" cy="28" r="24" stroke-dasharray="150.8" stroke-dashoffset="0"/>
+      </svg>
+      <div class="timer-num" id="timerNum">60</div>
+    </div>
+  </div>
+  <div class="card" id="answerCard">
+    <div id="answerField"></div>
+    <div class="hint" id="answerHint" style="display:none"></div>
+    <div class="error" id="answerError">Please enter an answer before submitting.</div>
+    <button class="btn btn-primary" id="submitBtn" onclick="submitAnswer()" style="margin-top:14px">Submit answer</button>
+  </div>
+</div>
+
+<!-- SCREEN 5: RESULT (submitted / timeout) -->
+<div id="screen-result" class="screen">
+  <div class="header">
+    <h1>🌙 Eid Trivia Night</h1>
+    <p id="resultTeamLabel"></p>
+  </div>
+  <div class="card result-card">
+    <div class="result-icon" id="resultIcon">✅</div>
+    <div class="result-title" id="resultTitle">Answer submitted!</div>
+    <div class="result-sub" id="resultSub">Your answer has been recorded.</div>
+    <div class="score-badge" id="resultScore" style="display:none"></div>
+    <button class="btn btn-primary" onclick="goToDashboard()" style="margin-top:1.5rem">Back to questions</button>
+  </div>
+</div>
+
+<!-- SCREEN 6: GAME OVER / LEADERBOARD -->
+<div id="screen-gameover" class="screen">
+  <div class="header">
+    <h1>🌙 Game Over!</h1>
+    <p>Final results</p>
+  </div>
+  <div class="card">
+    <div class="label">Leaderboard</div>
+    <div id="leaderboardList"></div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// STATE
+// ============================================
+let state = {
+  team: null,
+  captain: null,
+  members: [],
+  questions: [],
+  timer: 60,
+  currentQ: null,
+  timerInterval: null,
+  timerLeft: 60,
+  unlockedQuestions: [],
+  submittedQuestions: [],
+  pollInterval: null
+};
+
+// ============================================
+// SCREEN MANAGEMENT
+// ============================================
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ============================================
+// REGISTRATION
+// ============================================
+function addMember() {
+  const list = document.getElementById('membersList');
+  if (list.children.length >= 8) return;
+  const row = document.createElement('div');
+  row.className = 'member-row';
+  row.innerHTML = `<input type="text" placeholder="Member ${list.children.length + 1}" maxlength="25"><button onclick="removeMember(this)" title="Remove">×</button>`;
+  list.appendChild(row);
+}
+
+function removeMember(btn) {
+  const list = document.getElementById('membersList');
+  if (list.children.length <= 1) return;
+  btn.closest('.member-row').remove();
+}
+
+async function register() {
+  const captain = document.getElementById('captainName').value.trim();
+  const errEl = document.getElementById('reg-error');
+  errEl.style.display = 'none';
+
+  if (!captain) { errEl.textContent = 'Please enter the captain name.'; errEl.style.display = 'block'; return; }
+
+  const members = Array.from(document.querySelectorAll('#membersList input'))
+    .map(i => i.value.trim()).filter(Boolean);
+
+  try {
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ captain, members })
+    });
+    const data = await res.json();
+    if (!res.ok) { errEl.textContent = data.error || 'Registration failed.'; errEl.style.display = 'block'; return; }
+
+    state.team = data.team;
+    state.captain = captain;
+    state.members = members;
+
+    localStorage.setItem('eid_team', data.team);
+    localStorage.setItem('eid_captain', captain);
+
+    // Load config
+    const cfg = await fetch('/api/config').then(r => r.json());
+    state.questions = cfg.questions;
+    state.timer = cfg.timer;
+
+    document.getElementById('waitingTeamName').textContent = captain;
+    document.getElementById('waitingMembers').innerHTML =
+      [captain + ' (Captain)', ...members].map(m => `• ${m}`).join('<br>');
+
+    show('waiting');
+    startPolling();
+  } catch(e) {
+    errEl.textContent = 'Connection error. Please try again.'; errEl.style.display = 'block';
+  }
+}
+
+// ============================================
+// POLLING — check game state every 3s
+// ============================================
+function startPolling() {
+  if (state.pollInterval) clearInterval(state.pollInterval);
+  state.pollInterval = setInterval(pollState, 3000);
+  pollState();
+}
+
+async function pollState() {
+  try {
+    const data = await fetch(`/api/state?team=${encodeURIComponent(state.team)}`).then(r => r.json());
+
+    state.unlockedQuestions = data.unlockedQuestions;
+    state.submittedQuestions = data.submittedQuestions;
+
+    const currentScreen = document.querySelector('.screen.active').id;
+
+    if (data.gameEnded) {
+      clearInterval(state.pollInterval);
+      loadLeaderboard();
+      return;
+    }
+
+    if (data.gameStarted && currentScreen === 'screen-waiting') {
+      show('dashboard');
+    }
+
+    if (currentScreen === 'screen-dashboard') {
+      renderTiles();
+    }
+  } catch(e) {}
+}
+
+// ============================================
+// DASHBOARD — TILES
+// ============================================
+function renderTiles() {
+  const grid = document.getElementById('tilesGrid');
+  const prev = grid.innerHTML;
+  const categories = { 'General Knowledge': '🌍', 'Back to School': '📚', 'Deen': '⭐' };
+
+  grid.innerHTML = state.questions.map(q => {
+    const unlocked = state.unlockedQuestions.includes(q.id);
+    const submitted = state.submittedQuestions.includes(q.id);
+    const cls = submitted ? 'tile-submitted' : unlocked ? 'tile-unlocked tile-new' : 'tile-locked';
+    const onclick = (unlocked && !submitted) ? `openQuestion(${q.id})` : '';
+    const icon = categories[q.category] || '❓';
+    return `<div class="tile ${cls}" onclick="${onclick}">
+      <div class="tile-num">${q.id}</div>
+      <div class="tile-cat">${icon}</div>
+    </div>`;
+  }).join('');
+
+  const answered = state.submittedQuestions.length;
+  const unlocked = state.unlockedQuestions.length;
+  document.getElementById('progressLabel').textContent =
+    `${answered} of ${unlocked} unlocked questions answered`;
+  document.getElementById('dashTeamLabel').textContent = state.captain + "'s table";
+}
+
+// ============================================
+// ANSWER SCREEN
+// ============================================
+function openQuestion(qId) {
+  if (!state.unlockedQuestions.includes(qId)) return;
+  if (state.submittedQuestions.includes(qId)) return;
+
+  state.currentQ = state.questions.find(q => q.id === qId);
+  if (!state.currentQ) return;
+
+  clearTimerInterval();
+
+  const q = state.currentQ;
+  document.getElementById('answerBadge').textContent = `Q${q.id} · ${q.category}`;
+  document.getElementById('backBtn').style.display = 'flex';
+  document.getElementById('answerError').classList.remove('show');
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('submitBtn').textContent = 'Submit answer';
+
+  // Render input field
+  const field = document.getElementById('answerField');
+  if (q.type === 'mcq') {
+    field.innerHTML = q.options.map((opt, i) => {
+      const val = String.fromCharCode(65 + i);
+      return `<label class="mc-option" onclick="selectMC(this,'aq${q.id}')"><input type="radio" name="aq${q.id}" value="${val}"> ${opt}</label>`;
+    }).join('');
+  } else if (q.type === 'checkbox') {
+    field.innerHTML = q.options.map(opt =>
+      `<label class="cb-option" onclick="toggleCB(this)"><input type="checkbox" value="${opt}"> ${opt}</label>`
+    ).join('');
+  } else if (q.type === 'paragraph') {
+    field.innerHTML = `<textarea id="aq${q.id}" rows="8" placeholder="${q.placeholder || ''}" style="font-size:14px"></textarea>`;
+  } else {
+    const mode = q.type === 'number' ? 'numeric' : 'text';
+    field.innerHTML = `<input type="text" id="aq${q.id}" inputmode="${mode}" placeholder="${q.hint || 'Enter your answer'}">`;
+  }
+
+  const hintEl = document.getElementById('answerHint');
+  if (q.hint) { hintEl.textContent = q.hint; hintEl.style.display = 'block'; }
+  else { hintEl.style.display = 'none'; }
+
+  show('answer');
+  startTimer();
+}
+
+function selectMC(el, name) {
+  document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.closest('.mc-option').classList.remove('selected'));
+  el.classList.add('selected');
+  el.querySelector('input').checked = true;
+}
+
+function toggleCB(el) {
+  el.classList.toggle('selected');
+  el.querySelector('input').checked = el.classList.contains('selected');
+}
+
+function getAnswer() {
+  const q = state.currentQ;
+  if (!q) return null;
+  if (q.type === 'mcq') {
+    const sel = document.querySelector(`input[name="aq${q.id}"]:checked`);
+    return sel ? sel.value : null;
+  }
+  if (q.type === 'checkbox') {
+    const checked = Array.from(document.querySelectorAll(`.cb-option.selected input`)).map(c => c.value);
+    return checked.length >= 1 ? checked : null;
+  }
+  const el = document.getElementById(`aq${q.id}`);
+  return el && el.value.trim() ? el.value.trim() : null;
+}
+
+async function submitAnswer() {
+  const answer = getAnswer();
+  const errEl = document.getElementById('answerError');
+  errEl.classList.remove('show');
+
+  if (!answer) { errEl.classList.add('show'); return; }
+
+  clearTimerInterval();
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('submitBtn').textContent = 'Submitting...';
+
+  try {
+    const res = await fetch('/api/answer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ team: state.team, questionId: state.currentQ.id, answer })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      errEl.textContent = data.error || 'Submission failed.';
+      errEl.classList.add('show');
+      document.getElementById('submitBtn').disabled = false;
+      document.getElementById('submitBtn').textContent = 'Submit answer';
+      return;
+    }
+
+    state.submittedQuestions.push(state.currentQ.id);
+
+    document.getElementById('resultTeamLabel').textContent = state.captain + "'s table";
+    document.getElementById('resultIcon').textContent = '✅';
+    document.getElementById('resultTitle').textContent = 'Answer submitted!';
+    document.getElementById('resultSub').textContent = `Q${state.currentQ.id} — ${state.currentQ.label}`;
+
+    const scoreEl = document.getElementById('resultScore');
+    if (data.autoScore !== null && data.autoScore !== undefined) {
+      scoreEl.textContent = data.autoScore === 1 ? '🎉 Correct!' : data.autoScore > 1 ? `🎉 ${data.autoScore} points!` : '❌ Incorrect';
+      scoreEl.style.display = 'inline-block';
+      scoreEl.style.background = data.autoScore > 0 ? 'var(--green-light)' : '#fff5f5';
+      scoreEl.style.color = data.autoScore > 0 ? 'var(--green-dark)' : 'var(--danger)';
+    } else {
+      scoreEl.style.display = 'none';
+    }
+
+    show('result');
+  } catch(e) {
+    errEl.textContent = 'Connection error. Try again.';
+    errEl.classList.add('show');
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').textContent = 'Submit answer';
+    startTimer();
+  }
+}
+
+function goBack() {
+  clearTimerInterval();
+  show('dashboard');
+  renderTiles();
+}
+
+function goToDashboard() {
+  show('dashboard');
+  renderTiles();
+}
+
+// ============================================
+// TIMER
+// ============================================
+function startTimer() {
+  state.timerLeft = state.timer;
+  updateTimerUI();
+  state.timerInterval = setInterval(() => {
+    state.timerLeft--;
+    updateTimerUI();
+    if (state.timerLeft <= 0) {
+      clearTimerInterval();
+      timeOut();
+    }
+  }, 1000);
+}
+
+function clearTimerInterval() {
+  if (state.timerInterval) { clearInterval(state.timerInterval); state.timerInterval = null; }
+}
+
+function updateTimerUI() {
+  const t = state.timerLeft;
+  const total = state.timer;
+  const ring = document.getElementById('timerRing');
+  const circle = document.getElementById('timerCircle');
+  const num = document.getElementById('timerNum');
+  const circumference = 150.8;
+
+  num.textContent = t;
+  const offset = circumference * (1 - t / total);
+  circle.style.strokeDashoffset = offset;
+
+  ring.className = 'timer-ring';
+  if (t <= 10) ring.classList.add('timer-danger');
+  else if (t <= 20) ring.classList.add('timer-warn');
+}
+
+function timeOut() {
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('resultTeamLabel').textContent = state.captain + "'s table";
+  document.getElementById('resultIcon').textContent = '⏰';
+  document.getElementById('resultTitle').textContent = 'Time\'s up!';
+  document.getElementById('resultSub').textContent = `You ran out of time on Q${state.currentQ.id}. This question is now locked.`;
+  document.getElementById('resultScore').style.display = 'none';
+  state.submittedQuestions.push(state.currentQ.id);
+  show('result');
+}
+
+// ============================================
+// LEADERBOARD
+// ============================================
+async function loadLeaderboard() {
+  show('gameover');
+  // Players see a simplified end screen — no scores revealed until admin announces
+  document.getElementById('leaderboardList').innerHTML =
+    '<div style="text-align:center;color:var(--sub);padding:2rem;font-size:15px">🎉 Game over! The host will announce the results shortly.</div>';
+}
+
+// ============================================
+// REJOIN ON RELOAD
+// ============================================
+window.addEventListener('load', async () => {
+  const savedTeam = localStorage.getItem('eid_team');
+  const savedCaptain = localStorage.getItem('eid_captain');
+  if (savedTeam && savedCaptain) {
+    try {
+      const cfg = await fetch('/api/config').then(r => r.json());
+      state.questions = cfg.questions;
+      state.timer = cfg.timer;
+      state.team = savedTeam;
+      state.captain = savedCaptain;
+      document.getElementById('waitingTeamName').textContent = savedCaptain;
+      document.getElementById('waitingMembers').innerHTML = savedCaptain + ' (Captain)';
+      show('waiting');
+      startPolling();
+    } catch(e) {}
+  }
+});
+</script>
+</body>
+</html>

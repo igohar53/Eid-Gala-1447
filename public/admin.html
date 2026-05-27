@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Eid Trivia 2025</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--green:#1D9E75;--green-dark:#0F6E56;--green-light:#E1F5EE;--bg:#f0f7f4;--card:#fff;--text:#1a202c;--sub:#64748b;--border:#e2e8f0;--danger:#e53e3e;--warn:#d97706}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}
+.screen{display:none;min-height:100vh;padding:1rem;max-width:900px;margin:0 auto}
+.screen.active{display:block}
+.header{background:linear-gradient(135deg,#0F6E56,#1D9E75);padding:1.25rem;border-radius:16px;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between}
+.header h1{color:#fff;font-size:20px;font-weight:700}
+.header p{color:#9FE1CB;font-size:13px;margin-top:2px}
+.header-right{text-align:right}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.25rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
+.label{font-size:11px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px}
+.btn{padding:10px 18px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:var(--green-dark)}
+.btn-green:disabled{opacity:0.4;cursor:not-allowed}
+.btn-red{background:#fff5f5;color:var(--danger);border:1px solid #fed7d7}
+.btn-red:hover{background:#fed7d7}
+.btn-outline{background:transparent;border:1.5px solid var(--green);color:var(--green)}
+.btn-sm{padding:6px 12px;font-size:13px;border-radius:8px}
+input,select{padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none;background:#fff}
+input:focus,select:focus{border-color:var(--green)}
+
+/* LOGIN */
+.login-wrap{max-width:360px;margin:20vh auto;text-align:center}
+.login-wrap h2{font-size:22px;margin-bottom:6px}
+.login-wrap p{color:var(--sub);margin-bottom:1.5rem;font-size:14px}
+.login-wrap input{width:100%;margin-bottom:1rem;text-align:center;font-size:16px}
+.login-wrap .btn{width:100%;padding:13px;font-size:15px}
+
+/* STATS BAR */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:1rem}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.stat-num{font-size:28px;font-weight:700;color:var(--green)}
+.stat-label{font-size:12px;color:var(--sub);margin-top:2px}
+
+/* QUESTION GRID */
+.q-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.q-tile{border:1.5px solid var(--border);border-radius:14px;padding:14px;transition:all 0.2s}
+.q-tile.unlocked{border-color:var(--green);background:var(--green-light)}
+.q-tile-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.q-num{font-size:18px;font-weight:700}
+.q-cat{font-size:11px;color:var(--sub);font-weight:500}
+.q-label{font-size:13px;color:var(--text);margin-bottom:10px;line-height:1.4}
+.q-submitted{font-size:12px;color:var(--green);font-weight:500}
+.unlock-btn{width:100%;padding:8px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.unlock-btn.lock{background:#fff5f5;color:var(--danger);border:1px solid #fed7d7}
+.unlock-btn.unlock{background:var(--green);color:#fff}
+
+/* TEAMS TABLE */
+.teams-table{width:100%;border-collapse:collapse;font-size:13px}
+.teams-table th{text-align:left;padding:8px 10px;background:#f8fafc;color:var(--sub);font-weight:600;border-bottom:1px solid var(--border)}
+.teams-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.teams-table tr:last-child td{border-bottom:none}
+.answered-pill{background:var(--green-light);color:var(--green-dark);padding:2px 8px;border-radius:10px;font-size:12px;font-weight:500}
+
+/* MARKING */
+.mark-row{border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.mark-answer{background:#f8fafc;border-radius:8px;padding:10px;font-size:14px;color:var(--text);margin:8px 0;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.score-input{display:flex;align-items:center;gap:8px;margin-top:8px}
+.score-input input{width:70px}
+.score-status{font-size:12px;padding:3px 10px;border-radius:10px;font-weight:500}
+.score-auto{background:#e8f5e9;color:#2e7d32}
+.score-manual{background:#fff3cd;color:var(--warn)}
+.score-unmarked{background:#fff5f5;color:var(--danger)}
+
+/* LEADERBOARD */
+.lb-table{width:100%;border-collapse:collapse;font-size:14px}
+.lb-table th{padding:10px;background:#f8fafc;color:var(--sub);font-weight:600;border-bottom:1px solid var(--border);text-align:left}
+.lb-table td{padding:10px;border-bottom:1px solid var(--border)}
+.lb-table tr:first-child td{font-weight:700;color:var(--green)}
+.rank-1{font-size:20px}
+.rank-2{font-size:18px}
+.rank-3{font-size:16px}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:1rem;background:#f1f5f9;border-radius:12px;padding:4px}
+.tab{flex:1;padding:9px;border:none;border-radius:9px;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--sub);font-family:inherit;transition:all 0.15s}
+.tab.active{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* TIMER EDIT */
+.timer-row{display:flex;align-items:center;gap:10px}
+.timer-row input{width:80px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen active">
+  <div class="login-wrap">
+    <h2>🔐 Admin Panel</h2>
+    <p>Eid Trivia Night 2025</p>
+    <input type="password" id="passwordInput" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')login()">
+    <button class="btn btn-green" onclick="login()">Login →</button>
+    <div style="color:var(--danger);font-size:13px;margin-top:8px;display:none" id="loginError">Wrong password</div>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div id="screen-admin" class="screen">
+  <div class="header">
+    <div>
+      <h1>🎮 Admin Panel</h1>
+      <p>Eid Trivia Night 2025</p>
+    </div>
+    <div class="header-right">
+      <div style="color:#9FE1CB;font-size:13px" id="adminStatus">Loading...</div>
+      <div style="color:#fff;font-size:12px;margin-top:4px" id="adminTimer"></div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="statTeams">0</div><div class="stat-label">Teams</div></div>
+    <div class="stat"><div class="stat-num" id="statUnlocked">0</div><div class="stat-label">Unlocked</div></div>
+    <div class="stat"><div class="stat-num" id="statAnswers">0</div><div class="stat-label">Total answers</div></div>
+    <div class="stat"><div class="stat-num" id="statTimer">60s</div><div class="stat-label">Timer</div></div>
+  </div>
+
+  <div class="card" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+    <button class="btn btn-green" id="startBtn" onclick="startGame()">▶ Start Game</button>
+    <button class="btn btn-outline" onclick="endGame()">🏁 End Game</button>
+    <div class="timer-row" style="margin-left:auto">
+      <span style="font-size:13px;color:var(--sub)">Timer:</span>
+      <input type="number" id="timerInput" value="60" min="10" max="300">
+      <button class="btn btn-outline btn-sm" onclick="updateTimer()">Set</button>
+    </div>
+    <button class="btn btn-red btn-sm" onclick="resetGame()">🔄 Reset</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('questions')">Questions</button>
+    <button class="tab" onclick="switchTab('teams')">Teams</button>
+    <button class="tab" onclick="switchTab('marking')">Marking</button>
+    <button class="tab" onclick="switchTab('leaderboard')">Leaderboard</button>
+  </div>
+
+  <!-- QUESTIONS TAB -->
+  <div class="tab-content active" id="tab-questions">
+    <div class="q-grid" id="questionGrid"></div>
+  </div>
+
+  <!-- TEAMS TAB -->
+  <div class="tab-content" id="tab-teams">
+    <div class="card">
+      <div class="label">Registered teams (<span id="teamsCount">0</span>)</div>
+      <div style="overflow-x:auto">
+        <table class="teams-table">
+          <thead><tr><th>Captain</th><th>Members</th><th>Answered</th></tr></thead>
+          <tbody id="teamsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARKING TAB -->
+  <div class="tab-content" id="tab-marking">
+    <div class="card">
+      <div class="label">Manual marking — open text answers</div>
+      <p style="font-size:13px;color:var(--sub);margin-bottom:1rem">Auto-marked questions (MCQ, numbers) are already scored. Review and score the open-text answers below.</p>
+      <div id="markingList"></div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD TAB -->
+  <div class="tab-content" id="tab-leaderboard">
+    <div class="card">
+      <div class="label">Live leaderboard</div>
+      <p style="font-size:13px;color:var(--sub);margin-bottom:1rem">Scores update as you mark answers. Only auto-marked scores show until you manually mark open answers.</p>
+      <div style="overflow-x:auto">
+        <table class="lb-table">
+          <thead><tr><th>#</th><th>Team</th><th>Score</th><th>Answered</th></tr></thead>
+          <tbody id="lbBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let adminPassword = '';
+let adminState = null;
+let questions = [];
+let pollInterval = null;
+
+function login() {
+  const pw = document.getElementById('passwordInput').value;
+  adminPassword = pw;
+  fetch('/api/admin/state', { headers: { password: pw } })
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(data => {
+      document.getElementById('screen-login').classList.remove('active');
+      document.getElementById('screen-admin').classList.add('active');
+      adminState = data;
+      loadQuestions();
+      renderAll(data);
+      startPoll();
+    })
+    .catch(() => {
+      document.getElementById('loginError').style.display = 'block';
+    });
+}
+
+document.getElementById('passwordInput').addEventListener('keydown', e => { if(e.key==='Enter') login(); });
+
+function adminFetch(url, opts={}) {
+  opts.headers = { ...(opts.headers||{}), password: adminPassword, 'Content-Type': 'application/json' };
+  return fetch(url, opts);
+}
+
+async function loadQuestions() {
+  const cfg = await fetch('/api/config').then(r => r.json());
+  questions = cfg.questions;
+  document.getElementById('timerInput').value = cfg.timer;
+}
+
+function startPoll() {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(async () => {
+    const data = await adminFetch('/api/admin/state').then(r => r.json());
+    adminState = data;
+    renderAll(data);
+  }, 3000);
+}
+
+function renderAll(data) {
+  // Stats
+  const totalAnswers = data.teams.reduce((a, t) => a + t.answeredCount, 0);
+  document.getElementById('statTeams').textContent = data.totalTeams;
+  document.getElementById('statUnlocked').textContent = data.unlockedQuestions.length;
+  document.getElementById('statAnswers').textContent = totalAnswers;
+  document.getElementById('statTimer').textContent = data.timer + 's';
+  document.getElementById('adminTimer').textContent = 'Timer: ' + data.timer + 's per question';
+  document.getElementById('adminStatus').textContent = data.gameStarted ? (data.gameEnded ? '🏁 Game ended' : '🟢 Game live') : '⏸ Not started';
+  document.getElementById('startBtn').disabled = data.gameStarted;
+
+  renderQuestionGrid(data);
+  renderTeams(data);
+  renderMarking(data);
+  renderLeaderboard(data);
+}
+
+function renderQuestionGrid(data) {
+  if (!questions.length) return;
+  const grid = document.getElementById('questionGrid');
+  const cats = { 'General Knowledge': '🌍', 'Back to School': '📚', 'Deen': '⭐' };
+  grid.innerHTML = questions.map(q => {
+    const unlocked = data.unlockedQuestions.includes(q.id);
+    const submittedCount = data.teams.filter(t => t.answers && t.answers[q.id] !== undefined).length;
+    return `<div class="q-tile ${unlocked ? 'unlocked' : ''}">
+      <div class="q-tile-top">
+        <span class="q-num">${cats[q.category]||'❓'} Q${q.id}</span>
+        <span class="q-cat">${q.category}</span>
+      </div>
+      <div class="q-label">${q.label}</div>
+      <div class="q-submitted">${submittedCount} / ${data.totalTeams} submitted</div>
+      <button class="unlock-btn ${unlocked ? 'lock' : 'unlock'}" style="margin-top:10px" onclick="toggleQuestion(${q.id}, ${unlocked})">
+        ${unlocked ? '🔒 Lock question' : '🔓 Unlock question'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function renderTeams(data) {
+  document.getElementById('teamsCount').textContent = data.totalTeams;
+  document.getElementById('teamsBody').innerHTML = data.teams.map(t =>
+    `<tr>
+      <td><strong>${t.captain}</strong></td>
+      <td style="color:var(--sub)">${(t.members||[]).join(', ') || '—'}</td>
+      <td><span class="answered-pill">${t.answeredCount} / ${questions.length}</span></td>
+    </tr>`
+  ).join('') || '<tr><td colspan="3" style="color:var(--sub);text-align:center;padding:1rem">No teams registered yet</td></tr>';
+}
+
+function renderMarking(data) {
+  const manualTypes = ['short', 'paragraph'];
+  const list = document.getElementById('markingList');
+  let html = '';
+
+  questions.filter(q => manualTypes.includes(q.type) || q.id === 10).forEach(q => {
+    const teamsWithAnswer = data.teams.filter(t => t.answers && t.answers[q.id] !== undefined);
+    if (!teamsWithAnswer.length) return;
+
+    html += `<div style="margin-bottom:1.5rem">
+      <div class="label" style="margin-bottom:8px">Q${q.id} — ${q.label}</div>`;
+
+    teamsWithAnswer.forEach(t => {
+      const score = t.scores ? t.scores[q.id] : undefined;
+      const statusClass = score !== undefined ? 'score-auto' : 'score-unmarked';
+      const statusText = score !== undefined ? `Scored: ${score}` : 'Not scored';
+      const ans = Array.isArray(t.answers[q.id]) ? t.answers[q.id].join(', ') : t.answers[q.id];
+      html += `<div class="mark-row">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <strong style="font-size:14px">${t.captain}</strong>
+          <span class="score-status ${statusClass}">${statusText}</span>
+        </div>
+        <div class="mark-answer">${ans}</div>
+        <div class="score-input">
+          <span style="font-size:13px;color:var(--sub)">Score:</span>
+          <input type="number" min="0" max="10" value="${score !== undefined ? score : ''}" placeholder="0" id="score_${t.captain}_${q.id}">
+          <button class="btn btn-green btn-sm" onclick="saveScore('${t.captain}','${q.id}')">Save</button>
+        </div>
+      </div>`;
+    });
+
+    html += '</div>';
+  });
+
+  list.innerHTML = html || '<div style="color:var(--sub);text-align:center;padding:2rem">No manual answers to mark yet.</div>';
+}
+
+function renderLeaderboard(data) {
+  const lb = data.teams.map(t => {
+    const total = Object.values(t.scores || {}).reduce((a, b) => a + (b || 0), 0);
+    return { captain: t.captain, total, answered: t.answeredCount };
+  }).sort((a, b) => b.total - a.total);
+
+  const medals = ['🥇', '🥈', '🥉'];
+  document.getElementById('lbBody').innerHTML = lb.map((t, i) =>
+    `<tr>
+      <td><span class="${i < 3 ? 'rank-'+(i+1) : ''}">${medals[i] || (i+1)}</span></td>
+      <td>${t.captain}</td>
+      <td><strong style="color:var(--green)">${t.total}</strong></td>
+      <td style="color:var(--sub)">${t.answered} / ${questions.length}</td>
+    </tr>`
+  ).join('') || '<tr><td colspan="4" style="color:var(--sub);text-align:center;padding:1rem">No scores yet</td></tr>';
+}
+
+async function toggleQuestion(id, currentlyUnlocked) {
+  const url = currentlyUnlocked ? '/api/admin/lock' : '/api/admin/unlock';
+  await adminFetch(url, { method: 'POST', body: JSON.stringify({ questionId: id }) });
+  const data = await adminFetch('/api/admin/state').then(r => r.json());
+  adminState = data;
+  renderAll(data);
+}
+
+async function startGame() {
+  if (!confirm('Start the game? All registered teams will see the dashboard.')) return;
+  await adminFetch('/api/admin/start', { method: 'POST', body: '{}' });
+}
+
+async function endGame() {
+  if (!confirm('End the game? Teams will see the game over screen.')) return;
+  await adminFetch('/api/admin/end', { method: 'POST', body: '{}' });
+}
+
+async function resetGame() {
+  if (!confirm('RESET the entire game? All teams and answers will be deleted. This cannot be undone.')) return;
+  await adminFetch('/api/admin/reset', { method: 'POST', body: '{}' });
+}
+
+async function updateTimer() {
+  const seconds = parseInt(document.getElementById('timerInput').value);
+  if (seconds < 10 || seconds > 300) { alert('Timer must be between 10 and 300 seconds'); return; }
+  await adminFetch('/api/admin/timer', { method: 'POST', body: JSON.stringify({ seconds }) });
+  alert('Timer updated to ' + seconds + 's');
+}
+
+async function saveScore(captain, questionId) {
+  const input = document.getElementById(`score_${captain}_${questionId}`);
+  const score = parseFloat(input.value);
+  if (isNaN(score) || score < 0) { alert('Please enter a valid score'); return; }
+  const teamKey = captain.trim().toLowerCase();
+  await adminFetch('/api/admin/score', { method: 'POST', body: JSON.stringify({ team: teamKey, questionId: parseInt(questionId), score }) });
+  const data = await adminFetch('/api/admin/state').then(r => r.json());
+  adminState = data;
+  renderAll(data);
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    const names = ['questions', 'teams', 'marking', 'leaderboard'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+}
+</script>
+</body>
+</html>
